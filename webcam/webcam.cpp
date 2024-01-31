@@ -24,10 +24,29 @@ using namespace std;
 
 static const uint8_t DOWNSIZE = 10;
 
+void report(void)
+{
+    static uint32_t count;
+    static uint32_t timeprev;
+
+    struct timeval tval = {};
+    gettimeofday(&tval, NULL);
+
+    if (tval.tv_sec - timeprev >= 1) {
+        if (count > 0) {
+            printf("%d fps\n", count);
+        }
+        timeprev = tval.tv_sec;
+        count = 0;
+    }
+
+    count++;
+}
+
 int main(int, char**)
 {
     cv::Mat image;
-    
+
     cv::VideoCapture cap;
 
     cap.open(0, cv::CAP_ANY); 
@@ -37,12 +56,10 @@ int main(int, char**)
         return -1;
     }
 
-    uint32_t timeprev = 0;
-    
-    for (uint32_t count=0; ; count++) {
+    while (true) {
 
         cap.read(image);
-        
+
         if (image.empty()) {
             cerr << "ERROR! blank image grabbed\n";
             break;
@@ -69,22 +86,12 @@ int main(int, char**)
         cv::resize(downsized, upsized, cv::Size(cols, rows), cv::INTER_LINEAR);
 
         cv::imshow("Live", upsized);
- 
+
         if (cv::waitKey(1) >= 0) {
             break;
         }
 
-        struct timeval tval = {};
-        gettimeofday(&tval, NULL);
-
-        if (tval.tv_sec - timeprev >= 1) {
-            if (count > 0) {
-                printf("%d fps\n", count);
-            }
-            timeprev = tval.tv_sec;
-            count = 0;
-        }
-
+        report();
     }
 
     return 0;
