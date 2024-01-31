@@ -20,9 +20,13 @@
 #include <stdint.h>
 #include <sys/time.h>
 
+#include <opticalflow.hpp>
+
 using namespace std;
 
 static const uint8_t DOWNSIZE = 10;
+
+static const uint16_t FLOWSCALE = 20;
 
 void report(void)
 {
@@ -65,19 +69,38 @@ int main(int, char**)
             break;
         }
 
-        auto rows = image.rows;
-        auto cols = image.cols;
+        const auto rows = image.rows;
+        const auto cols = image.cols;
 
         cv::Mat gray;
         cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
 
         static cv::Mat downprev;
 
+        const auto downcols = cols / DOWNSIZE;
+        const auto downrows = rows / DOWNSIZE;
+
         cv::Mat downsized;
-        cv::resize(gray, downsized, cv::Size(cols/DOWNSIZE, rows/DOWNSIZE), 
+        cv::resize(gray, downsized, cv::Size(downcols, downrows), 
                 cv::INTER_NEAREST);
 
         if (downprev.data != NULL) {
+
+            int16_t ofx = 0;
+            int16_t ofy = 0;
+
+            OpticalFlow::LK_Plus_2D(
+                    downsized.data,
+                    downprev.data,
+                    downrows,
+                    downcols,
+                    FLOWSCALE,
+                    &ofx,
+                    &ofy
+                    );
+
+            printf("%+04d %+04d\n", ofx, ofy);
+
         }
 
         downprev = downsized.clone();
@@ -91,7 +114,7 @@ int main(int, char**)
             break;
         }
 
-        report();
+        // report();
     }
 
     return 0;

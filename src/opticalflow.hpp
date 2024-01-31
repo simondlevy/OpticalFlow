@@ -331,8 +331,8 @@ class OpticalFlow {
             auto *f1 = curr_img + cols + 2;   // right-shifted image
             auto *f2 = curr_img + cols;       // left-shifted image	
             auto *f3 = curr_img + 2*cols + 1; // down-shifted image	
-            auto *f4 = curr_img + 1;		     // up-shifted image
-            auto *fz = last_img + cols + 1; 	 // time-shifted image
+            auto *f4 = curr_img + 1;		  // up-shifted image
+            auto *fz = last_img + cols + 1;   // time-shifted image
 
             for (uint16_t r=1; r<rows-1; ++r) { 
 
@@ -350,7 +350,9 @@ class OpticalFlow {
                     b1  += (FCF0 * F2F1);                   
                     b2  += (FCF0 * F4F3);                                   
                 }
-                f0+=2;	//move to next row of image
+
+                // move to next row of image
+                f0+=2;	
                 fz+=2;
                 f1+=2;
                 f2+=2;
