@@ -9,6 +9,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdio.h>
 
 #include <vector>
 
@@ -35,8 +36,23 @@ class Arrow {
             : x(a.x), y(a.y), dx(a.dx), dy(a.dy)
         {
         }
+}; 
 
-        static std::vector<Arrow> getField(const uint8_t * pixels)
+class FlowField {
+
+    public:
+
+        FlowField(const uint16_t rows, const uint16_t cols, const uint16_t patchSize)
+        {
+            if (rows % patchSize || cols % patchSize) {
+                printf("Image size %d x %d not a multiple of patch size %d\n",
+                        cols, rows, patchSize);
+                exit(1);
+            }
+
+        }
+
+        std::vector<Arrow> getField(const uint8_t * pixels)
         {
             std::vector<Arrow> field;
 
