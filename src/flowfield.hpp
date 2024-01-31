@@ -13,30 +13,18 @@
 
 #include <vector>
 
-class Arrow {
-
-    public:
-
-        uint16_t x1;
-        uint16_t y1;
-
-        uint16_t x2;
-        uint16_t y2;
-
-        Arrow(
-                const uint16_t _x1,
-                const uint16_t _y1,
-                const uint16_t _x2,
-                const uint16_t _y2) 
-            : x1(_x1), y1(_y1), x2(_x2), y2(_y2)
-        {
-        }
-
-}; 
-
 class FlowField {
 
     public:
+
+        typedef struct {
+
+            uint16_t x1;
+            uint16_t y1;
+            uint16_t x2;
+            uint16_t y2;
+
+        } arrow_t;
 
         FlowField(
                 const uint16_t rows, 
@@ -63,16 +51,16 @@ class FlowField {
 
                 for (uint16_t k=0; k<_cols/_patchSize; ++k) {
 
-                    auto ulx = k * _patchSize;
-                    auto uly = j * _patchSize;
+                    uint16_t ulx = k * _patchSize;
+                    uint16_t uly = j * _patchSize;
 
-                    auto lrx = (k + 1) * _patchSize;
-                    auto lry = (j + 1) * _patchSize;
+                    uint16_t lrx = (k + 1) * _patchSize;
+                    uint16_t lry = (j + 1) * _patchSize;
 
-                    auto ctrx = (ulx + lrx)  / 2;
-                    auto ctry = (uly + lry)  / 2;
+                    uint16_t ctrx = (ulx + lrx)  / 2;
+                    uint16_t ctry = (uly + lry)  / 2;
 
-                    _arrows.push_back(new Arrow(ctrx, ctry, 0, 0));
+                    _arrows.push_back(new arrow_t {ctrx, ctry, 0, 0});
                 }
             }
 
@@ -89,7 +77,7 @@ class FlowField {
             delete _patch;
         }
 
-        std::vector<Arrow *> get(const uint8_t * imgcurr)
+        std::vector<arrow_t *> get(const uint8_t * imgcurr)
         {
             if (_ready) {
 
@@ -118,6 +106,6 @@ class FlowField {
 
         bool _ready;
 
-        std::vector<Arrow *> _arrows;
+        std::vector<arrow_t *> _arrows;
 }; 
 
