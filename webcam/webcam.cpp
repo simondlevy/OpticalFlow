@@ -106,7 +106,7 @@ int main(int, char**)
             cv::arrowedLine(
                     orig, 
                     cv::Point(ctrx, ctry),
-                    cv::Point(ctrx + ofx, ctry + ofy),
+                    cv::Point(ctrx - ofx, ctry - ofy),
                     ARROWCOLOR);
         }
 
