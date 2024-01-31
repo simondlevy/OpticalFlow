@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-CFLAGS = -Wno-unused-variable
+CFLAGS = -Wall
 
 SRC = ../src
 
@@ -35,7 +35,10 @@ webcam: webcam.o
 	g++ -o webcam webcam.o $(LIBRARIES)
 
 webcam.o: webcam.cpp $(SRC)/opticalflow.hpp
-	g++ -c $(INCLUDE) webcam.cpp 
+	g++ -c $(CFLAGS) $(INCLUDE) webcam.cpp 
+
+run: webcam
+	./webcam
 
 clean:
 	rm -rf webcam *.o
