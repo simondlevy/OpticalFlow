@@ -55,7 +55,7 @@ class FlowField {
 
             _rows = rows;
             _cols = cols;
-            _patchSize = _patchSize;
+            _patchSize = patchSize;
 
             _patch = new uint8_t [patchSize];
 
@@ -93,9 +93,14 @@ class FlowField {
             delete _patch;
         }
 
-        std::vector<Arrow *> getField(const uint8_t * imgcurr)
+        std::vector<Arrow *> get(const uint8_t * imgcurr)
         {
             if (_ready) {
+
+                for (auto arrow : _arrows) {
+                    arrow->dx = 5;
+                    arrow->dy = 5;
+                }
             }
 
             memcpy(_imgprev, imgcurr, _rows * _cols);

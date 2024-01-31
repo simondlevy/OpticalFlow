@@ -31,6 +31,9 @@ static const auto ARROWCOLOR = cv::Scalar(255, 255, 255);
 
 static const uint16_t PATCHSIZE = 20;
 
+static const uint16_t ROWS = 480;
+static const uint16_t COLS = 640;
+
 void report(void)
 {
     static uint32_t count;
@@ -54,6 +57,7 @@ int main(int, char**)
 {
     cv::VideoCapture cap;
 
+    FlowField flowField = FlowField(ROWS, COLS, PATCHSIZE);
 
     cap.open(0, cv::CAP_ANY); 
 
@@ -73,17 +77,13 @@ int main(int, char**)
             break;
         }
 
-        const auto rows = orig.rows;
-        const auto cols = orig.cols;
-
-        if (rows % PATCHSIZE || cols % PATCHSIZE) {
-            printf("Image size %d x %d not a multiple of patch size %d\n",
-                    cols, rows, PATCHSIZE);
-            exit(0);
-        }
-
         cv::Mat gray;
         cv::cvtColor(orig, gray, cv::COLOR_BGR2GRAY);
+
+        for (auto arrow : flowField.get(gray.data)) {
+
+            printf("%d %d\n", arrow->x, arrow->y);
+        }
 
         cv::imshow("Live", orig);
 
