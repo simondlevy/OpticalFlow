@@ -17,25 +17,21 @@ class Arrow {
 
     public:
 
-        uint16_t x;
-        uint16_t y;
+        uint16_t x1;
+        uint16_t y1;
 
-        uint16_t dx;
-        uint16_t dy;
+        uint16_t x2;
+        uint16_t y2;
 
         Arrow(
-                const uint16_t _x,
-                const uint16_t _y,
-                const uint16_t _dx,
-                const uint16_t _dy) 
-            : x(_x), y(_y), dx(_dx), dy(_dy)
+                const uint16_t _x1,
+                const uint16_t _y1,
+                const uint16_t _x2,
+                const uint16_t _y2) 
+            : x1(_x1), y1(_y1), x2(_x2), y2(_y2)
         {
         }
 
-        Arrow(Arrow & a)
-            : x(a.x), y(a.y), dx(a.dx), dy(a.dy)
-        {
-        }
 }; 
 
 class FlowField {
@@ -98,8 +94,8 @@ class FlowField {
             if (_ready) {
 
                 for (auto arrow : _arrows) {
-                    arrow->dx = 5;
-                    arrow->dy = 5;
+                    arrow->x2 = arrow->x1 + 5;
+                    arrow->y2 = arrow->y1 + 5;
                 }
             }
 

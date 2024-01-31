@@ -82,7 +82,7 @@ int main(int, char**)
 
         for (auto arrow : flowField.get(gray.data)) {
 
-            cv::circle(orig, cv::Point(arrow->x, arrow->y), 1, ARROWCOLOR);
+            cv::circle(orig, cv::Point(arrow->x1, arrow->y1), 1, ARROWCOLOR);
         }
 
         cv::imshow("Live", orig);
