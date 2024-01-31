@@ -21,6 +21,7 @@
 #include <sys/time.h>
 
 #include <opticalflow.hpp>
+#include <flowfield.hpp>
 
 using namespace std;
 
@@ -90,8 +91,6 @@ int main(int, char**)
             for (uint16_t j=0; j<rows/PATCHSIZE; ++j) {
 
                 for (uint16_t k=0; k<cols/PATCHSIZE; ++k) {
-
-                    static uint8_t patch[PATCHSIZE * PATCHSIZE];
 
                     auto ulx = k * PATCHSIZE;
                     auto uly = j * PATCHSIZE;

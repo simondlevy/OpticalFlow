@@ -34,7 +34,7 @@ endif
 webcam: webcam.o 
 	g++ -o webcam webcam.o $(LIBRARIES)
 
-webcam.o: webcam.cpp $(SRC)/opticalflow.hpp
+webcam.o: webcam.cpp $(SRC)/*.hpp
 	g++ -c $(CFLAGS) $(INCLUDE) webcam.cpp 
 
 run: webcam
