@@ -390,10 +390,10 @@ class OpticalFlow {
             int32_t  A11=0, A12=0, A22=0, b1=0, b2=0;
 
             // set up pointers
-            auto *f0 = curr_img;             // top left 
+            auto *f0 = curr_img;            // top left 
             auto *f1 = curr_img + 1; 		// top right
-            auto *f2 = curr_img + cols; 	    // bottom left
-            auto *f3 = curr_img + cols + 1; 	// bottom right
+            auto *f2 = curr_img + cols; 	// bottom left
+            auto *f3 = curr_img + cols + 1; // bottom right
             auto *fz = last_img; 		    // top left time-shifted
 
             // loop through

@@ -28,7 +28,7 @@ static const uint16_t FLOWSCALE = 20;
 
 static const auto ARROWCOLOR = cv::Scalar(255, 255, 255);
 
-static const uint16_t PATCHSIZE = 10;
+static const uint16_t PATCHSIZE = 20;
 
 void report(void)
 {
@@ -75,7 +75,7 @@ int main(int, char**)
         const auto cols = orig.cols;
 
         if (rows % PATCHSIZE || cols % PATCHSIZE) {
-            printf("Kmage size %d x %d not a multiple of patch size %d\n",
+            printf("Image size %d x %d not a multiple of patch size %d\n",
                     cols, rows, PATCHSIZE);
             exit(0);
         }
@@ -87,11 +87,27 @@ int main(int, char**)
 
         if (grayprev.data != NULL) {
 
+            for (uint16_t j=0; j<rows/PATCHSIZE; ++j) {
+
+                for (uint16_t k=0; k<cols/PATCHSIZE; ++k) {
+
+                    auto ulx = k * PATCHSIZE;
+                    auto uly = j * PATCHSIZE;
+
+                    auto lrx = (k + 1) * PATCHSIZE;
+                    auto lry = (j + 1) * PATCHSIZE;
+
+                    auto ctrx = (ulx + lrx)  / 2;
+                    auto ctry = (uly + lry)  / 2;
+
+                    cv::circle(orig, cv::Point(ctrx, ctry), 2, ARROWCOLOR);
+                }
+            }
+
             int16_t ofx = 0;
             int16_t ofy = 0;
 
-            // OpticalFlow::LK_Plus_2D(
-            OpticalFlow::LK_Square_2D(
+            OpticalFlow::LK_Plus_2D(
                     gray.data,
                     grayprev.data,
                     rows,
