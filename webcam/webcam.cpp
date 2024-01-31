@@ -100,7 +100,7 @@ int main(int, char**)
                     auto ctrx = (ulx + lrx)  / 2;
                     auto ctry = (uly + lry)  / 2;
 
-                    cv::circle(orig, cv::Point(ctrx, ctry), 2, ARROWCOLOR);
+                    cv::circle(orig, cv::Point(ctrx, ctry), 1, ARROWCOLOR);
                 }
             }
 
