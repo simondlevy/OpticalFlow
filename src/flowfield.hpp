@@ -42,7 +42,10 @@ class FlowField {
 
     public:
 
-        FlowField(const uint16_t rows, const uint16_t cols, const uint16_t patchSize)
+        FlowField(
+                const uint16_t rows, 
+                const uint16_t cols, 
+                const uint16_t patchSize)
         {
             if (rows % patchSize || cols % patchSize) {
                 printf("Image size %d x %d not a multiple of patch size %d\n",
@@ -50,6 +53,16 @@ class FlowField {
                 exit(1);
             }
 
+            _rows = rows;
+            _cols = cols;
+            _patchSize = _patchSize;
+
+            _patch = new uint8_t [patchSize];
+        }
+
+        ~FlowField(void)
+        {
+            delete _patch;
         }
 
         std::vector<Arrow> getField(const uint8_t * pixels)
@@ -58,5 +71,13 @@ class FlowField {
 
             return field;
         }
+
+    private:
+
+        uint16_t _rows;
+        uint16_t _cols;
+        uint16_t _patchSize;
+
+        uint8_t * _patch;
 }; 
 
