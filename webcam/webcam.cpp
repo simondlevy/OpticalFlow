@@ -28,6 +28,8 @@ static const uint8_t DOWNSIZE = 10;
 
 static const uint16_t FLOWSCALE = 20;
 
+static const auto ARROWCOLOR = cv::Scalar(255, 255, 255);
+
 void report(void)
 {
     static uint32_t count;
@@ -49,8 +51,6 @@ void report(void)
 
 int main(int, char**)
 {
-    cv::Mat image;
-
     cv::VideoCapture cap;
 
     cap.open(0, cv::CAP_ANY); 
@@ -62,26 +62,28 @@ int main(int, char**)
 
     while (true) {
 
-        cap.read(image);
+        cv::Mat orig;
 
-        if (image.empty()) {
-            cerr << "ERROR! blank image grabbed\n";
+        cap.read(orig);
+
+        if (orig.empty()) {
+            cerr << "ERROR! blank orig grabbed\n";
             break;
         }
 
-        const auto rows = image.rows;
-        const auto cols = image.cols;
+        const auto rows = orig.rows;
+        const auto cols = orig.cols;
 
         cv::Mat gray;
-        cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+        cv::cvtColor(orig, gray, cv::COLOR_BGR2GRAY);
 
         static cv::Mat downprev;
 
         const auto downcols = cols / DOWNSIZE;
         const auto downrows = rows / DOWNSIZE;
 
-        cv::Mat downsized;
-        cv::resize(gray, downsized, cv::Size(downcols, downrows), 
+        cv::Mat downcurr;
+        cv::resize(gray, downcurr, cv::Size(downcols, downrows), 
                 cv::INTER_NEAREST);
 
         if (downprev.data != NULL) {
@@ -90,31 +92,33 @@ int main(int, char**)
             int16_t ofy = 0;
 
             OpticalFlow::LK_Plus_2D(
-                    downsized.data,
+                    downcurr.data,
                     downprev.data,
                     downrows,
                     downcols,
                     FLOWSCALE,
                     &ofx,
-                    &ofy
-                    );
+                    &ofy);
 
-            printf("%+04d %+04d\n", ofx, ofy);
+            const auto ctrx = cols / 2;
+            const auto ctry = rows / 2;
 
+            cv::arrowedLine(
+                    orig, 
+                    cv::Point(ctrx, ctry),
+                    cv::Point(ctrx + ofx, ctry + ofy),
+                    ARROWCOLOR);
         }
 
-        downprev = downsized.clone();
+        downprev = downcurr.clone();
 
-        cv::Mat upsized;
-        cv::resize(downsized, upsized, cv::Size(cols, rows), cv::INTER_LINEAR);
-
-        cv::imshow("Live", upsized);
+        cv::imshow("Live", orig);
 
         if (cv::waitKey(1) >= 0) {
             break;
         }
 
-        // report();
+        report();
     }
 
     return 0;
