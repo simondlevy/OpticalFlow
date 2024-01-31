@@ -85,51 +85,6 @@ int main(int, char**)
         cv::Mat gray;
         cv::cvtColor(orig, gray, cv::COLOR_BGR2GRAY);
 
-        static cv::Mat grayprev;
-
-        if (grayprev.data != NULL) {
-
-            for (uint16_t j=0; j<rows/PATCHSIZE; ++j) {
-
-                for (uint16_t k=0; k<cols/PATCHSIZE; ++k) {
-
-                    auto ulx = k * PATCHSIZE;
-                    auto uly = j * PATCHSIZE;
-
-                    auto lrx = (k + 1) * PATCHSIZE;
-                    auto lry = (j + 1) * PATCHSIZE;
-
-                    auto ctrx = (ulx + lrx)  / 2;
-                    auto ctry = (uly + lry)  / 2;
-
-                    cv::circle(orig, cv::Point(ctrx, ctry), 1, ARROWCOLOR);
-                }
-            }
-
-            int16_t ofx = 0;
-            int16_t ofy = 0;
-
-            OpticalFlow::LK_Plus_2D(
-                    gray.data,
-                    grayprev.data,
-                    rows,
-                    cols,
-                    FLOWSCALE,
-                    &ofx,
-                    &ofy);
-
-            const auto ctrx = cols / 2;
-            const auto ctry = rows / 2;
-
-            cv::arrowedLine(
-                    orig, 
-                    cv::Point(ctrx, ctry),
-                    cv::Point(ctrx - ofx, ctry - ofy),
-                    ARROWCOLOR);
-        }
-
-        grayprev = gray.clone();
-
         cv::imshow("Live", orig);
 
         if (cv::waitKey(1) >= 0) {

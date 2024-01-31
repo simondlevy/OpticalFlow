@@ -59,6 +59,10 @@ class FlowField {
 
             _patch = new uint8_t [patchSize];
 
+            _imgprev = new uint8_t [_rows * _cols];
+
+            _ready = false;
+
             for (uint16_t j=0; j<_rows/_patchSize; ++j) {
 
                 for (uint16_t k=0; k<_cols/_patchSize; ++k) {
@@ -80,13 +84,23 @@ class FlowField {
 
         ~FlowField(void)
         {
+            for (auto arrow : _arrows) {
+                delete arrow;
+            }
+
+            delete _imgprev;
+
             delete _patch;
         }
 
-        std::vector<Arrow *> getField(
-                const uint8_t * imgcurr,
-                const uint8_t * imgprev)
+        std::vector<Arrow *> getField(const uint8_t * imgcurr)
         {
+            if (_ready) {
+            }
+
+            memcpy(_imgprev, imgcurr, _rows * _cols);
+
+            _ready = true;
 
             return _arrows;
         }
@@ -97,7 +111,11 @@ class FlowField {
         uint16_t _cols;
         uint16_t _patchSize;
 
+        uint8_t * _imgprev;
+
         uint8_t * _patch;
+
+        bool _ready;
 
         std::vector<Arrow *> _arrows;
 }; 
