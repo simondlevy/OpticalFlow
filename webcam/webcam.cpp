@@ -24,8 +24,6 @@
 
 using namespace std;
 
-static const uint8_t DOWNSIZE = 10;
-
 static const uint16_t FLOWSCALE = 20;
 
 static const auto ARROWCOLOR = cv::Scalar(255, 255, 255);
@@ -77,25 +75,19 @@ int main(int, char**)
         cv::Mat gray;
         cv::cvtColor(orig, gray, cv::COLOR_BGR2GRAY);
 
-        static cv::Mat downprev;
+        static cv::Mat grayprev;
 
-        const auto downcols = cols / DOWNSIZE;
-        const auto downrows = rows / DOWNSIZE;
-
-        cv::Mat downcurr;
-        cv::resize(gray, downcurr, cv::Size(downcols, downrows), 
-                cv::INTER_NEAREST);
-
-        if (downprev.data != NULL) {
+        if (grayprev.data != NULL) {
 
             int16_t ofx = 0;
             int16_t ofy = 0;
 
-            OpticalFlow::LK_Plus_2D(
-                    downcurr.data,
-                    downprev.data,
-                    downrows,
-                    downcols,
+            // OpticalFlow::LK_Plus_2D(
+            OpticalFlow::LK_Square_2D(
+                    gray.data,
+                    grayprev.data,
+                    rows,
+                    cols,
                     FLOWSCALE,
                     &ofx,
                     &ofy);
@@ -110,7 +102,7 @@ int main(int, char**)
                     ARROWCOLOR);
         }
 
-        downprev = downcurr.clone();
+        grayprev = gray.clone();
 
         cv::imshow("Live", orig);
 
