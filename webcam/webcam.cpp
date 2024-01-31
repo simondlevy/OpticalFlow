@@ -54,6 +54,7 @@ int main(int, char**)
 {
     cv::VideoCapture cap;
 
+
     cap.open(0, cv::CAP_ANY); 
 
     if (!cap.isOpened()) {

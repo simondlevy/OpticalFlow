@@ -58,6 +58,24 @@ class FlowField {
             _patchSize = _patchSize;
 
             _patch = new uint8_t [patchSize];
+
+            for (uint16_t j=0; j<_rows/_patchSize; ++j) {
+
+                for (uint16_t k=0; k<_cols/_patchSize; ++k) {
+
+                    auto ulx = k * _patchSize;
+                    auto uly = j * _patchSize;
+
+                    auto lrx = (k + 1) * _patchSize;
+                    auto lry = (j + 1) * _patchSize;
+
+                    auto ctrx = (ulx + lrx)  / 2;
+                    auto ctry = (uly + lry)  / 2;
+
+                    _arrows.push_back(new Arrow(ctrx, ctry, 0, 0));
+                }
+            }
+
         }
 
         ~FlowField(void)
@@ -65,11 +83,12 @@ class FlowField {
             delete _patch;
         }
 
-        std::vector<Arrow> getField(const uint8_t * pixels)
+        std::vector<Arrow *> getField(
+                const uint8_t * imgcurr,
+                const uint8_t * imgprev)
         {
-            std::vector<Arrow> field;
 
-            return field;
+            return _arrows;
         }
 
     private:
@@ -79,5 +98,7 @@ class FlowField {
         uint16_t _patchSize;
 
         uint8_t * _patch;
+
+        std::vector<Arrow *> _arrows;
 }; 
 
