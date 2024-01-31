@@ -15,10 +15,10 @@
  */
 
 #include <opencv2/opencv.hpp>
-
 #include <iostream>
-
 #include <stdio.h>
+#include <stdint.h>
+#include <sys/time.h>
 
 using namespace std;
 
@@ -36,8 +36,10 @@ int main(int, char**)
         cerr << "ERROR! Unable to open camera\n";
         return -1;
     }
+
+    uint32_t timeprev = 0;
     
-    while (true) {
+    for (uint32_t count=0; ; count++) {
 
         cap.read(image);
         
@@ -63,19 +65,26 @@ int main(int, char**)
 
         downprev = downsized.clone();
 
-        //uint8_t * data = downsized.data;
-
-        //for (uint8_t k=0; k<35; ++k) {
-        //    data[k*35 + k] = 0;
-       // }
-
         cv::Mat upsized;
         cv::resize(downsized, upsized, cv::Size(cols, rows), cv::INTER_LINEAR);
 
         cv::imshow("Live", upsized);
-
-        if (cv::waitKey(1) >= 0)
+ 
+        if (cv::waitKey(1) >= 0) {
             break;
+        }
+
+        struct timeval tval = {};
+        gettimeofday(&tval, NULL);
+
+        if (tval.tv_sec - timeprev >= 1) {
+            if (count > 0) {
+                printf("%d fps\n", count);
+            }
+            timeprev = tval.tv_sec;
+            count = 0;
+        }
+
     }
 
     return 0;
