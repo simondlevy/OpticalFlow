@@ -28,6 +28,8 @@ static const uint16_t FLOWSCALE = 20;
 
 static const auto ARROWCOLOR = cv::Scalar(255, 255, 255);
 
+static const uint16_t PATCHSIZE = 10;
+
 void report(void)
 {
     static uint32_t count;
@@ -71,6 +73,12 @@ int main(int, char**)
 
         const auto rows = orig.rows;
         const auto cols = orig.cols;
+
+        if (rows % PATCHSIZE || cols % PATCHSIZE) {
+            printf("Kmage size %d x %d not a multiple of patch size %d\n",
+                    cols, rows, PATCHSIZE);
+            exit(0);
+        }
 
         cv::Mat gray;
         cv::cvtColor(orig, gray, cv::COLOR_BGR2GRAY);
