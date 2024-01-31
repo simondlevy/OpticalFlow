@@ -43,3 +43,6 @@ run: webcam
 clean:
 	rm -rf webcam *.o
 
+edit:
+	vim webcam.cpp
+

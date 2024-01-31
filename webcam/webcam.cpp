@@ -14,44 +14,69 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <opencv2/core.hpp>
-#include <opencv2/videoio.hpp>
-#include <opencv2/highgui.hpp>
+#include <opencv2/opencv.hpp>
+
 #include <iostream>
+
 #include <stdio.h>
 
-using namespace cv;
 using namespace std;
+
+static const uint8_t DOWNSIZE = 10;
 
 int main(int, char**)
 {
-    Mat frame;
+    cv::Mat image;
     
-    VideoCapture cap;
+    cv::VideoCapture cap;
 
-    int deviceID = 0;             
-    int apiID = cv::CAP_ANY;      
-    
-    cap.open(deviceID, apiID);
+    cap.open(0, cv::CAP_ANY); 
 
     if (!cap.isOpened()) {
         cerr << "ERROR! Unable to open camera\n";
         return -1;
     }
     
-    while (true)
-    {
-        cap.read(frame);
+    while (true) {
+
+        cap.read(image);
         
-        if (frame.empty()) {
-            cerr << "ERROR! blank frame grabbed\n";
+        if (image.empty()) {
+            cerr << "ERROR! blank image grabbed\n";
             break;
         }
-        
-        imshow("Live", frame);
-        if (waitKey(5) >= 0)
+
+        auto rows = image.rows;
+        auto cols = image.cols;
+
+        cv::Mat gray;
+        cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+
+        static cv::Mat downprev;
+
+        cv::Mat downsized;
+        cv::resize(gray, downsized, cv::Size(cols/DOWNSIZE, rows/DOWNSIZE), 
+                cv::INTER_NEAREST);
+
+        if (downprev.data != NULL) {
+        }
+
+        downprev = downsized.clone();
+
+        //uint8_t * data = downsized.data;
+
+        //for (uint8_t k=0; k<35; ++k) {
+        //    data[k*35 + k] = 0;
+       // }
+
+        cv::Mat upsized;
+        cv::resize(downsized, upsized, cv::Size(cols, rows), cv::INTER_LINEAR);
+
+        cv::imshow("Live", upsized);
+
+        if (cv::waitKey(1) >= 0)
             break;
     }
-    
+
     return 0;
 }
