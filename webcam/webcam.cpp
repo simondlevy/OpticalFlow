@@ -51,6 +51,17 @@ void report(void)
     count++;
 }
 
+static void makeTiles(const uint8_t * image, uint8_t tiles[R][C][P*P])
+{
+    for (uint32_t j=0; j<R*C; ++j) {
+        const auto r = j / (P * C);
+        const auto c = (j % C) / P;
+        const auto k = j % (P*P) ;
+        tiles[r][c][k] = image[j];
+    }
+}
+
+
 int main(int, char**)
 {
     cv::VideoCapture cap;
@@ -67,31 +78,32 @@ int main(int, char**)
 
     while (true) {
 
-        cv::Mat orig;
+        cv::Mat image;
 
-        cap.read(orig);
+        cap.read(image);
 
-        if (orig.empty()) {
-            cerr << "ERROR! blank orig grabbed\n";
+        if (image.empty()) {
+            cerr << "ERROR! blank image grabbed\n";
             break;
         }
 
         cv::Mat gray;
-        cv::cvtColor(orig, gray, cv::COLOR_BGR2GRAY);
+        cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
 
-        /*
-           static uint8_t tiles[R][C][P*P];
+        static uint8_t tiles[R][C][P*P];
 
-           for (uint32_t j=0; j<R*C; ++j) {
-           const auto r = j / (P * C);
-           const auto c = (j % C) / P;
-           const auto k = j % (P*P) ;
-           tiles[r][c][k] = gray.data[j];
-           }
+        makeTiles(gray.data, tiles);
 
-           (void)tiles;*/
+        for (uint16_t r=0; r<R; ++r) {
+            for (uint16_t c=0; c<C; ++c) {
+                auto p2 = P / 2;
+                auto ctrx = (c + 1) * p2;
+                auto ctry = (r + 1) * p2;
+                cv::circle(image, cv::Point(ctrx, ctry), 1, ARROWCOLOR);
+            }
+        }
 
-        cv::imshow("Live", orig);
+        cv::imshow("Live", image);
 
         if (cv::waitKey(1) >= 0) {
             break;
