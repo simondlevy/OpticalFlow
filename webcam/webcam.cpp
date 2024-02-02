@@ -30,7 +30,13 @@ static const auto ARROWCOLOR = cv::Scalar(255, 255, 255);
 
 static const uint16_t R = 480;
 static const uint16_t C = 640;
-static const uint16_t P = 40;
+
+static const uint16_t DOWNSCALE = 10;
+
+static const uint16_t RR = R / DOWNSCALE;
+static const uint16_t CC = C / DOWNSCALE;
+
+static const uint16_t P = 5; // tile size
 
 void report(void)
 {
@@ -51,14 +57,52 @@ void report(void)
     count++;
 }
 
-static void makeTiles(const uint8_t * image, uint8_t tiles[R][C][P*P])
+static void makeTiles(const uint8_t * image, uint8_t tiles[RR][CC][P*P])
 {
-    for (uint32_t j=0; j<R*C; ++j) {
-        const auto r = j / (P * C);
-        const auto c = (j % C) / P;
+    for (uint32_t j=0; j<RR*CC; ++j) {
+        const auto r = j / (P * CC);
+        const auto c = (j % CC) / P;
         const auto k = j % (P*P) ;
         tiles[r][c][k] = image[j];
     }
+}
+
+void computeFlow(uint8_t curr_tiles[RR][CC][P*P])
+{
+    static uint8_t prev_tiles[RR][CC][P*P];
+
+    for (uint16_t r=0; r<RR; ++r) {
+
+        for (uint16_t c=0; c<CC; ++c) {
+
+            int16_t ofx = 0;
+            int16_t ofy = 0;
+
+            OpticalFlow::LK_Square_2D(
+                    curr_tiles[r][c], 
+                    prev_tiles[r][c],
+                    P,
+                    P, 
+                    FLOWSCALE, 
+                    &ofx,
+                    &ofy);
+
+
+            /*
+            auto p2 = P / 2;
+            auto ctrx = (c + 1) * p2;
+            auto ctry = (r + 1) * p2;
+
+            cv::arrowedLine(
+                    image, 
+                    cv::Point(ctrx, ctry), 
+                    cv::Point(ctrx + ofx, ctry + ofy), 
+                    ARROWCOLOR);
+                    */
+        }
+    }
+
+    memcpy(prev_tiles, curr_tiles, RR*CC*P*P);
 }
 
 
@@ -90,41 +134,17 @@ int main(int, char**)
         cv::Mat gray;
         cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
 
-        static uint8_t curr_tiles[R][C][P*P];
-        static uint8_t prev_tiles[R][C][P*P];
+        cv::Mat small;
+        cv::resize(gray, small, cv::Size(CC, RR));
 
-        makeTiles(gray.data, curr_tiles);
+        uint8_t curr_tiles[RR][CC][P*P] = {};
 
-        for (uint16_t r=0; r<1 /*R*/; ++r) {
-            for (uint16_t c=0; c<1 /*C*/; ++c) {
+        makeTiles(small.data, curr_tiles);
 
-                int16_t ofx = 0;
-                int16_t ofy = 0;
+        computeFlow(curr_tiles);
 
-                OpticalFlow::LK_Square_2D(
-                        curr_tiles[r][c], 
-                        prev_tiles[r][c],
-                        P,
-                        P, 
-                        FLOWSCALE, 
-                        &ofx,
-                        &ofy);
-
-                auto p2 = P / 2;
-                auto ctrx = (c + 1) * p2;
-                auto ctry = (r + 1) * p2;
-
-                cv::arrowedLine(
-                        image, 
-                        cv::Point(ctrx, ctry), 
-                        cv::Point(ctrx + ofx, ctry + ofy), 
-                        ARROWCOLOR);
-            }
-        }
-
-        memcpy(prev_tiles, curr_tiles, sizeof(curr_tiles));
-
-        cv::imshow("Live", image);
+        // cv::imshow("Live", image);
+        cv::imshow("Live", small);
 
         if (cv::waitKey(1) >= 0) {
             break;
