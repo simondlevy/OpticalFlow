@@ -21,7 +21,6 @@
 #include <sys/time.h>
 
 #include <opticalflow.hpp>
-#include <flowfield.hpp>
 
 using namespace std;
 
@@ -33,6 +32,8 @@ static const uint16_t PATCHSIZE = 20;
 
 static const uint16_t ROWS = 480;
 static const uint16_t COLS = 640;
+
+static uint8_t patches[24][32][400];
 
 void report(void)
 {
@@ -57,8 +58,6 @@ int main(int, char**)
 {
     cv::VideoCapture cap;
 
-    FlowField flowField = FlowField(ROWS, COLS, PATCHSIZE);
-
     cap.open(0, cv::CAP_ANY); 
 
     if (!cap.isOpened()) {
@@ -80,13 +79,9 @@ int main(int, char**)
         cv::Mat gray;
         cv::cvtColor(orig, gray, cv::COLOR_BGR2GRAY);
 
-        for (auto arrow : flowField.get(gray.data)) {
-
-            cv::arrowedLine(
-                    orig, 
-                    cv::Point(arrow->x1, arrow->y1),
-                    cv::Point(arrow->x2, arrow->y2),
-                    ARROWCOLOR);
+        for (uint16_t j=0; j<rows; ++j) {
+            for (uint16_t k=0; k<cols; ++k) {
+            }
         }
 
         cv::imshow("Live", orig);
