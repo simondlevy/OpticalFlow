@@ -36,7 +36,7 @@ static const uint16_t DOWNSCALE = 10;
 static const uint16_t RR = R / DOWNSCALE;
 static const uint16_t CC = C / DOWNSCALE;
 
-static const uint16_t P = 5; // tile size
+static const uint16_t P = 4; // tile size
 
 void report(void)
 {
@@ -146,8 +146,19 @@ int main(int, char**)
 
         computeFlow(curr_tiles, ofx, ofy);
 
-        // cv::imshow("Live", image);
-        cv::imshow("Live", small);
+        cv::resize(small, gray, cv::Size(C, R));
+
+        for (uint16_t r=P; r<RR; r+=P) {
+            auto rr = r * DOWNSCALE;
+            cv::line(gray, cv::Point(0, rr), cv::Point(C, rr), ARROWCOLOR);
+        }
+
+        for (uint16_t c=P; c<CC; c+=P) {
+            auto cc = c * DOWNSCALE;
+            cv::line(gray, cv::Point(cc, 0), cv::Point(cc, R), ARROWCOLOR);
+        }
+
+        cv::imshow("Optical Flow", gray);
 
         if (cv::waitKey(1) >= 0) {
             break;
