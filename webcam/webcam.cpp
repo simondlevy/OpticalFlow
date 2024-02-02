@@ -27,6 +27,7 @@ using namespace std;
 static const uint16_t FLOWSCALE = 2;
 
 static const auto ARROWCOLOR = cv::Scalar(255, 255, 255);
+static const auto LINECOLOR = cv::Scalar(0, 0, 0);
 
 static const uint16_t R = 480;
 static const uint16_t C = 640;
@@ -150,12 +151,20 @@ int main(int, char**)
 
         for (uint16_t r=P; r<RR; r+=P) {
             auto rr = r * DOWNSCALE;
-            cv::line(gray, cv::Point(0, rr), cv::Point(C, rr), ARROWCOLOR);
+            cv::line(gray, cv::Point(0, rr), cv::Point(C, rr), LINECOLOR);
         }
 
         for (uint16_t c=P; c<CC; c+=P) {
             auto cc = c * DOWNSCALE;
-            cv::line(gray, cv::Point(cc, 0), cv::Point(cc, R), ARROWCOLOR);
+            cv::line(gray, cv::Point(cc, 0), cv::Point(cc, R), LINECOLOR);
+        }
+
+        for (uint16_t r=P; r<RR; r+=P) {
+            auto rr = r * DOWNSCALE;
+            for (uint16_t c=P; c<CC; c+=P) {
+                auto cc = c * DOWNSCALE;
+                cv::circle(gray, cv::Point(cc, rr), 1, ARROWCOLOR);
+            }
         }
 
         cv::imshow("Optical Flow", gray);
