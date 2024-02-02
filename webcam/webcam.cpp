@@ -28,12 +28,9 @@ static const uint16_t FLOWSCALE = 20;
 
 static const auto ARROWCOLOR = cv::Scalar(255, 255, 255);
 
-static const uint16_t PATCHSIZE = 20;
-
-static const uint16_t ROWS = 480;
-static const uint16_t COLS = 640;
-
-static uint8_t patches[24][32][400];
+static const uint16_t R = 480;
+static const uint16_t C = 640;
+static const uint16_t P = 20;
 
 void report(void)
 {
@@ -79,10 +76,16 @@ int main(int, char**)
         cv::Mat gray;
         cv::cvtColor(orig, gray, cv::COLOR_BGR2GRAY);
 
-        for (uint16_t j=0; j<rows; ++j) {
-            for (uint16_t k=0; k<cols; ++k) {
-            }
+        static uint8_t tiles[R][C][P*P];
+
+        for (uint32_t j=0; j<R*C; ++j) {
+            const auto r = j / (P * C);
+            const auto c = (j % C) / P;
+            const auto k = j % (P*P) ;
+            tiles[r][c][k] = gray.data[j];
         }
+
+        (void)tiles;
 
         cv::imshow("Live", orig);
 
