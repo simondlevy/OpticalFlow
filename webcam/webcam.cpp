@@ -24,13 +24,13 @@
 
 using namespace std;
 
-static const uint16_t FLOWSCALE = 20;
+static const uint16_t FLOWSCALE = 2;
 
 static const auto ARROWCOLOR = cv::Scalar(255, 255, 255);
 
 static const uint16_t R = 480;
 static const uint16_t C = 640;
-static const uint16_t P = 20;
+static const uint16_t P = 40;
 
 void report(void)
 {
@@ -90,18 +90,39 @@ int main(int, char**)
         cv::Mat gray;
         cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
 
-        static uint8_t tiles[R][C][P*P];
+        static uint8_t curr_tiles[R][C][P*P];
+        static uint8_t prev_tiles[R][C][P*P];
 
-        makeTiles(gray.data, tiles);
+        makeTiles(gray.data, curr_tiles);
 
-        for (uint16_t r=0; r<R; ++r) {
-            for (uint16_t c=0; c<C; ++c) {
+        for (uint16_t r=0; r<1 /*R*/; ++r) {
+            for (uint16_t c=0; c<1 /*C*/; ++c) {
+
+                int16_t ofx = 0;
+                int16_t ofy = 0;
+
+                OpticalFlow::LK_Square_2D(
+                        curr_tiles[r][c], 
+                        prev_tiles[r][c],
+                        P,
+                        P, 
+                        FLOWSCALE, 
+                        &ofx,
+                        &ofy);
+
                 auto p2 = P / 2;
                 auto ctrx = (c + 1) * p2;
                 auto ctry = (r + 1) * p2;
-                cv::circle(image, cv::Point(ctrx, ctry), 1, ARROWCOLOR);
+
+                cv::arrowedLine(
+                        image, 
+                        cv::Point(ctrx, ctry), 
+                        cv::Point(ctrx + ofx, ctry + ofy), 
+                        ARROWCOLOR);
             }
         }
+
+        memcpy(prev_tiles, curr_tiles, sizeof(curr_tiles));
 
         cv::imshow("Live", image);
 
