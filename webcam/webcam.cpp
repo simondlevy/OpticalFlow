@@ -62,6 +62,9 @@ int main(int, char**)
         return -1;
     }
 
+    cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+
     while (true) {
 
         cv::Mat orig;
@@ -76,16 +79,17 @@ int main(int, char**)
         cv::Mat gray;
         cv::cvtColor(orig, gray, cv::COLOR_BGR2GRAY);
 
-        static uint8_t tiles[R][C][P*P];
+        /*
+           static uint8_t tiles[R][C][P*P];
 
-        for (uint32_t j=0; j<R*C; ++j) {
-            const auto r = j / (P * C);
-            const auto c = (j % C) / P;
-            const auto k = j % (P*P) ;
-            tiles[r][c][k] = gray.data[j];
-        }
+           for (uint32_t j=0; j<R*C; ++j) {
+           const auto r = j / (P * C);
+           const auto c = (j % C) / P;
+           const auto k = j % (P*P) ;
+           tiles[r][c][k] = gray.data[j];
+           }
 
-        (void)tiles;
+           (void)tiles;*/
 
         cv::imshow("Live", orig);
 
