@@ -67,7 +67,10 @@ static void makeTiles(const uint8_t * image, uint8_t tiles[RR][CC][P*P])
     }
 }
 
-void computeFlow(uint8_t curr_tiles[RR][CC][P*P])
+void computeFlow(
+        uint8_t curr_tiles[RR][CC][P*P], 
+        int16_t ofx[RR][CC],
+        int16_t ofy[RR][CC])
 {
     static uint8_t prev_tiles[RR][CC][P*P];
 
@@ -75,17 +78,14 @@ void computeFlow(uint8_t curr_tiles[RR][CC][P*P])
 
         for (uint16_t c=0; c<CC; ++c) {
 
-            int16_t ofx = 0;
-            int16_t ofy = 0;
-
             OpticalFlow::LK_Square_2D(
                     curr_tiles[r][c], 
                     prev_tiles[r][c],
                     P,
                     P, 
                     FLOWSCALE, 
-                    &ofx,
-                    &ofy);
+                    &ofx[r][c],
+                    &ofy[r][c]);
 
 
             /*
@@ -141,7 +141,10 @@ int main(int, char**)
 
         makeTiles(small.data, curr_tiles);
 
-        computeFlow(curr_tiles);
+        int16_t ofx[RR][CC] = {};
+        int16_t ofy[RR][CC] = {};
+
+        computeFlow(curr_tiles, ofx, ofy);
 
         // cv::imshow("Live", image);
         cv::imshow("Live", small);
