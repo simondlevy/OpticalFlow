@@ -159,10 +159,10 @@ int main(int, char**)
             cv::line(gray, cv::Point(cc, 0), cv::Point(cc, R), LINECOLOR);
         }
 
-        for (uint16_t r=P; r<RR; r+=P) {
-            auto rr = r * DOWNSCALE;
-            for (uint16_t c=P; c<CC; c+=P) {
-                auto cc = c * DOWNSCALE;
+        for (uint16_t r=0; r<RR; r+=P) {
+            auto rr = r * DOWNSCALE + P * DOWNSCALE / 2;
+            for (uint16_t c=0; c<CC; c+=P) {
+                auto cc = c * DOWNSCALE + P * DOWNSCALE / 2;
                 cv::circle(gray, cv::Point(cc, rr), 1, ARROWCOLOR);
             }
         }
